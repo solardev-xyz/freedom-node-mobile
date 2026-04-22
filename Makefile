@@ -1,15 +1,26 @@
 .PHONY: install build verify probe probe-ipfs probe-ipfs-offline probe-co probe-all clean
 
+# Version string surfaced into the binary as mobile.version via -ldflags -X.
+# `git describe` gives us "v0.1.0" at a tagged commit, "v0.1.0-3-gabc1234"
+# three commits after, "-dirty" suffix when the working tree has changes,
+# or a bare short SHA if no tags exist. Falls back to "dev" when git isn't
+# available (e.g. a tarball build).
+VERSION := $(shell git describe --tags --dirty --always 2>/dev/null || echo dev)
+
 # The gomobile output. Drop into an Android project's libs/ directory for
-# consumption as a Gradle file dependency.
-AAR_FILE=mobile.aar
+# consumption as a Gradle file dependency. Versioned filename so a consumer
+# dropping several AARs into libs/ can tell them apart at a glance.
+AAR_FILE=mobile-$(VERSION).aar
 BUILD_DIR=build
 
 # Android API 30 is a conservative minSdk floor. -checklinkname=0 lets the
 # runtime accept the //go:linkname calls bee and go-ethereum use into the
-# Go runtime; without it the build fails under Go >= 1.23.
+# Go runtime; without it the build fails under Go >= 1.23. -X injects the
+# version string into mobile/version.go so mobile.Mobile.version() returns
+# the git-described build tag instead of the "dev" fallback.
 ANDROID_API=30
-LDFLAGS=-checklinkname=0
+VERSION_PKG=github.com/solardev-xyz/freedom-node-mobile/mobile
+LDFLAGS=-checklinkname=0 -X $(VERSION_PKG).version=$(VERSION)
 
 # Resolve the Go install dir at make-time and invoke gomobile by full path.
 # Keeps `make install` / `make build` working even when $(go env GOBIN) (or
