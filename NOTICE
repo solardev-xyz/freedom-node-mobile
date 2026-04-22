@@ -1,0 +1,103 @@
+freedom-node-mobile
+Copyright (c) The freedom-node-mobile authors.
+
+Licensed under the Mozilla Public License, Version 2.0 (see LICENSE).
+
+This product bundles code from several upstream projects. Their licenses
+apply to the corresponding portions of the compiled mobile.aar. Full
+license texts are reproduced below.
+
+================================================================================
+1. bee-lite (github.com/Solar-Punk-Ltd/bee-lite), Apache License 2.0
+================================================================================
+
+The mobile/ package wraps Solar-Punk-Ltd/bee-lite, which is distributed
+under the Apache License, Version 2.0. You may obtain a copy of the
+License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+================================================================================
+2. Swarm Bee (github.com/ethersphere/bee), BSD 3-Clause License
+================================================================================
+
+bee-lite embeds ethersphere/bee, which is distributed under the
+BSD 3-Clause License:
+
+    Copyright (c) 2020 The Swarm Authors. All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+
+      * Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimer.
+      * Redistributions in binary form must reproduce the above
+        copyright notice, this list of conditions and the following
+        disclaimer in the documentation and/or other materials provided
+        with the distribution.
+      * Neither the name of Swarm nor the names of its contributors may
+        be used to endorse or promote products derived from this
+        software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+    HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+    OF THE POSSIBILITY OF SUCH DAMAGE.
+
+================================================================================
+3. kubo (github.com/ipfs/kubo), MIT / Apache-2.0 dual license
+================================================================================
+
+kubo is licensed under a dual MIT / Apache-2.0 license. All
+contributions since 2019-05-06 are dual-licensed; earlier contributions
+(and contributions by non-signoff authors per the list at
+https://github.com/ipfs/go-ipfs/issues/6302) are MIT-only.
+
+Recipients may choose either license.
+
+    MIT License:       https://opensource.org/licenses/MIT
+    Apache License 2.0: https://www.apache.org/licenses/LICENSE-2.0
+
+The full upstream license notice is available at:
+
+    https://github.com/ipfs/kubo/blob/master/LICENSE
+
+================================================================================
+4. go-ethereum (github.com/ethereum/go-ethereum), LGPL-3.0
+================================================================================
+
+bee transitively links against ethereum/go-ethereum. The library portion
+(everything outside cmd/) is licensed under the GNU Lesser General
+Public License, version 3.0; that is the portion linked into this
+project.
+
+    https://www.gnu.org/licenses/lgpl-3.0.html
+
+Per LGPL-3.0 section 4, recipients of this work have the right to
+modify the go-ethereum portion and relink the combined work against
+their modified version. Corresponding source is available upstream at
+github.com/ethereum/go-ethereum; specific versions used by this project
+are pinned in go.mod / go.sum.
+
+go-ethereum's own AUTHORS list is preserved in the upstream repository.
+
+================================================================================
+
+Additional transitive dependencies are declared in go.mod / go.sum. Each
+carries its own license; consult the corresponding module source for
+specifics.
