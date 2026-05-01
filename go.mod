@@ -26,6 +26,15 @@ exclude github.com/btcsuite/btcd/chaincfg/chainhash v1.0.1
 // nor test.
 replace google.golang.org/genproto => ./stubs/genproto
 
+// Mirrors bee-lite-java@ios-build-target's replace directive. The
+// patched bee fork at flotob/bee carries iOS-relevant fixes that have
+// not been upstreamed to ethersphere/bee yet:
+//   - fix(kademlia): close metrics storage  (long-uptime metric handle leak)
+//   - fix(cache): close wrapped index store (long-uptime cache handle leak)
+// Keep this in sync with bee-lite-java's same replace; bump in lockstep
+// when new patches are tagged on flotob/bee.
+replace github.com/ethersphere/bee/v2 => github.com/flotob/bee/v2 v2.7.0-freedom.2
+
 require (
 	github.com/Solar-Punk-Ltd/bee-lite v0.0.13
 	github.com/ethersphere/bee/v2 v2.7.0

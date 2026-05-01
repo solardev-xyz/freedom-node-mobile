@@ -29,7 +29,7 @@ type MobileNode interface {
 		act bool,
 		historyAddressHex string,
 		encrypt bool,
-		rLevel byte,
+		rLevel int32,
 		content []byte) (fileUploadResult *FileUploadResult, err error)
 }
 
@@ -162,15 +162,19 @@ func (m *MobileNodeImp) Download(hash string) (*FileDownloadResult, error) {
 	return &FileDownloadResult{File: result, Stats: nil}, nil
 }
 
+// Parameter name `rLevel` matches the MobileNode interface declaration
+// — Obj-C selectors encode parameter names, so an iface↔impl mismatch
+// (e.g. `redundancyLevel` here vs `rLevel` in the interface) would
+// produce two distinct Obj-C selectors and break protocol conformance.
 func (m *MobileNodeImp) Upload(batchIdHex, filename, contentType string,
 	act bool,
 	historyAddressHex string,
 	encrypt bool,
-	redundancyLevel byte,
+	rLevel int32,
 	content []byte) (fileUploadResult *FileUploadResult, err error) {
 
 	historyAddress := swarm.MustParseHexAddress(historyAddressHex)
-	reference, newHistoryAddress, err := m.uploadManager.Upload(batchIdHex, filename, contentType, act, historyAddress, encrypt, redundancyLevel, content)
+	reference, newHistoryAddress, err := m.uploadManager.Upload(batchIdHex, filename, contentType, act, historyAddress, encrypt, rLevel, content)
 	if err != nil {
 		return nil, err
 	}

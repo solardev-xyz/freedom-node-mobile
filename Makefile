@@ -1,4 +1,4 @@
-.PHONY: install build verify probe probe-ipfs probe-ipfs-offline probe-co probe-all clean
+.PHONY: install build build-ios verify verify-ios probe probe-ipfs probe-ipfs-offline probe-co probe-all clean
 
 # Version string surfaced into the binary as mobile.version via -ldflags -X.
 # `git describe` gives us "v0.1.0" at a tagged commit, "v0.1.0-3-gabc1234"
@@ -11,6 +11,9 @@ VERSION := $(shell git describe --tags --dirty --always 2>/dev/null || echo dev)
 # consumption as a Gradle file dependency. Versioned filename so a consumer
 # dropping several AARs into libs/ can tell them apart at a glance.
 AAR_FILE=mobile-$(VERSION).aar
+# iOS xcframework name. Kept as 'Mobile' to match bee-lite-java's
+# existing artifact, so SwarmKit migration is a single-line URL swap.
+XCFRAMEWORK=Mobile.xcframework
 BUILD_DIR=build
 
 # Android API 30 is a conservative minSdk floor. -checklinkname=0 lets the
@@ -86,6 +89,18 @@ build:
 		-o $(BUILD_DIR)/$(AAR_FILE) \
 		./mobile
 
+# Produce the iOS xcframework. Three slices (ios-arm64 device,
+# iossimulator-arm64, iossimulator-x86_64). Takes 5-15 min cold,
+# cache-fast after. ANDROID_HOME / JAVA_HOME are not consulted here —
+# the iOS build doesn't shell out to javac.
+build-ios:
+	rm -rf $(BUILD_DIR)/$(XCFRAMEWORK) && mkdir -p $(BUILD_DIR)
+	$(GOMOBILE) bind \
+		-target=ios,iossimulator \
+		-ldflags="$(LDFLAGS)" \
+		-o $(BUILD_DIR)/$(XCFRAMEWORK) \
+		./mobile
+
 # Host-side smoke test: boot bee-lite on the dev machine, poll /health,
 # shut down. Proves the Go side behaves correctly without any Android
 # tooling. Exit 0 on success.
@@ -146,6 +161,41 @@ verify:
 # the combined binary are sound — individually and together — before we
 # spend cycles on gomobile bind.
 probe-all: probe probe-ipfs probe-co
+
+# Structural sanity check on build/Mobile.xcframework. Confirms all three
+# slices are present, the Info.plist enumerates them, and the device
+# slice's binary contains symbols from bee, kubo, libp2p, and go-ethereum.
+# Fast (~2s) and needs no iOS runtime — just plutil + strings.
+verify-ios:
+	@set -e; \
+	XCF=$(BUILD_DIR)/$(XCFRAMEWORK); \
+	[ -d $$XCF ] || { echo "verify-ios: $$XCF not found — run 'make build-ios' first" >&2; exit 1; }; \
+	echo "=== xcframework contents ==="; \
+	ls -la $$XCF; \
+	echo; \
+	echo "=== Info.plist slices ==="; \
+	plutil -p $$XCF/Info.plist | grep -E 'LibraryIdentifier|SupportedPlatform|SupportedArchitectures'; \
+	echo; \
+	echo "=== expected slice directories ==="; \
+	for slice in ios-arm64 ios-arm64_x86_64-simulator; do \
+	    [ -d $$XCF/$$slice ] || { echo "verify-ios: missing slice $$slice" >&2; exit 1; }; \
+	    printf '  %-40s OK\n' "$$slice"; \
+	done; \
+	echo; \
+	echo "=== device slice symbols (sample) ==="; \
+	BIN=$$XCF/ios-arm64/Mobile.framework/Mobile; \
+	[ -f $$BIN ] || { echo "verify-ios: missing $$BIN" >&2; exit 1; }; \
+	for pkg in github.com/ethersphere/bee github.com/ipfs/kubo \
+	           github.com/libp2p/go-libp2p github.com/ethereum/go-ethereum github.com/ipfs/boxo; do \
+	    n=$$(strings $$BIN | grep -c "$$pkg" || true); \
+	    printf '  %-40s %s\n' "$$pkg" "$$n occurrences"; \
+	    [ $$n -gt 0 ] || { echo "verify-ios: no symbols for $$pkg in $$BIN" >&2; exit 1; }; \
+	done; \
+	echo; \
+	echo "=== device slice size ==="; \
+	du -sh $$XCF/ios-arm64/Mobile.framework $$XCF/ios-arm64_x86_64-simulator/Mobile.framework; \
+	echo; \
+	echo "verify-ios: OK"
 
 clean:
 	rm -rf $(BUILD_DIR)

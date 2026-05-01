@@ -22,7 +22,7 @@ func (um *UploadManager) Upload(batchIdHex, filename, contentType string,
 	act bool,
 	historyAddress swarm.Address,
 	encrypt bool,
-	rLevel byte,
+	rLevel int32,
 	reader []byte) (reference swarm.Address, newHistoryAddress swarm.Address, err error) {
 
 	byteReader := bytes.NewReader(reader)
@@ -30,7 +30,7 @@ func (um *UploadManager) Upload(batchIdHex, filename, contentType string,
 	return um.beeClient.AddFileBzz(context.Background(), batchIdHex, filename, contentType, act, historyAddress, encrypt, redundancyLevel, io.Reader(byteReader))
 }
 
-func getRedundancyLevel(rLevel byte) redundancy.Level {
+func getRedundancyLevel(rLevel int32) redundancy.Level {
 	switch rLevel {
 	case 1:
 		return redundancy.MEDIUM

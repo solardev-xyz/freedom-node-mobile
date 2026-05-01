@@ -30,8 +30,8 @@ func (sm *StampManager) GetAllBatches() {
 			Label:         batch.Label(),
 			BatchIdHex:    hex.EncodeToString(batch.ID()),
 			BatchAmount:   batch.Amount().String(),
-			BatchDepth:    batch.Depth(),
-			BucketDepth:   batch.BucketDepth(),
+			BatchDepth:    int32(batch.Depth()),
+			BucketDepth:   int32(batch.BucketDepth()),
 			ImmutableFlag: batch.ImmutableFlag(),
 		}
 	}

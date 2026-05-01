@@ -44,8 +44,14 @@ type StampData struct {
 	Label         string
 	BatchIdHex    string
 	BatchAmount   string
-	BatchDepth    byte
-	BucketDepth   byte
+	// BatchDepth and BucketDepth are int32 (not byte/uint8) because
+	// gomobile's Obj-C generator emits the literal token `byte` for
+	// `uint8`, which isn't a valid Obj-C type — known bug in
+	// golang.org/x/mobile/bind/genobjc.go. Using int32 sidesteps it.
+	// API-incompatible with the original Android consumers; iOS fork
+	// only.
+	BatchDepth    int32
+	BucketDepth   int32
 	ImmutableFlag bool
 }
 
